@@ -30,13 +30,6 @@
 
 package org.codeaurora.internal;
 
-import org.codeaurora.internal.SignalStrength;
-import org.codeaurora.internal.Status;
-import org.codeaurora.internal.Token;
-import org.codeaurora.internal.DcParam;
-import org.codeaurora.internal.INetworkCallback;
-import org.codeaurora.internal.Client;
-import org.codeaurora.internal.NrConfig;
 
 /**
  * Interface used to interact with the telephony framework for
@@ -46,67 +39,10 @@ import org.codeaurora.internal.NrConfig;
 interface IExtTelephony {
 
     /**
-     * Returns the current SIM Manual provision status.
-     * @param slotId user preferred slotId.
-     * @return Card provision status as integer, below are
-     * possible return values.
-     *   '0' - returned if Uicc Card is not provisioned.
-     *   '1' - returned if Uicc Card provisioned.
-     *  '-1'-  returned if there is an error @ below layers OR
-     *         if framework does not received info from Modem yet.
-     *  '-2'  returned when SIM card is not present in slot.
-     * Requires Permission: android.Manifest.permission.READ_PHONE_STATE
-     */
-    int getCurrentUiccCardProvisioningStatus(int slotId);
-
-    /**
-     * Activates the Uicc card.
-     * @param slotId user preferred slotId.
-     * @return Uicc card activation result as Integer, below are
-     *         supported return values:
-     *         '0' - Success
-     *        '-1' -Generic Failure
-     *        '-2' -Invalid input
-     *        '-3  -Another request in progress
-     * Requires Permission: android.Manifest.permission.MODIFY_PHONE_STATE
-     */
-    int activateUiccCard(int slotId);
-
-    /**
-     * Deactivates UICC card.
-     * @param slotId user preferred slotId.
-     * @return Uicc card deactivation result as Integer, below are
-     *     supported return values:
-     *     '0' - Success
-     *     '-1' -Generic Failure
-     *     '-2' -Invalid input
-     *     '-3  -Another request in progress
-     * Requires Permission: android.Manifest.permission.MODIFY_PHONE_STATE
-     */
-    int deactivateUiccCard(int slotId);
-
-    /**
-    * Check for Sms Prompt is Enabled or Not.
-    * @return
-    *        true - Sms Prompt is Enabled
-    *        false - Sms prompt is Disabled
-    * Requires Permission: android.Manifest.permission.READ_PHONE_STATE
-    */
-    boolean isSMSPromptEnabled();
-
-    /**
-    * Enable/Disable Sms prompt option.
-    * @param - enabled
-    *        true - to enable Sms prompt
-    *        false - to disable Sms prompt
-    * Requires Permission: android.Manifest.permission.MODIFY_PHONE_STATE
-    */
-    void setSMSPromptEnabled(boolean enabled);
-
-    /**
     * Get logical phone id for Emergency call.
     * @param - void
     * @return phone id
+    * Requires permission: android.Manifest.permission.READ_PRIVILEGED_PHONE_STATE
     */
     int getPhoneIdForECall();
 
@@ -115,6 +51,7 @@ interface IExtTelephony {
     * @param slotId user preferred slotId.
     * @param family UICC application family.
     * @return true or false
+    * Requires permission: android.Manifest.permission.READ_PRIVILEGED_PHONE_STATE
     */
     boolean hasGetIccFileHandler(int slotId, int family);
 
@@ -124,6 +61,7 @@ interface IExtTelephony {
     * @param family UICC application family.
     * @param efId the file ID in the SIM card.
     * @return true or false
+    * Requires permission: android.Manifest.permission.READ_PRIVILEGED_PHONE_STATE
     */
     boolean readEfFromIcc(int slotId, int family, int efId);
 
@@ -135,6 +73,7 @@ interface IExtTelephony {
     * @param efdata updated data to the EF.
     * @return true - send the request to load transparent files sucessfully
     *         false - failed to get the icc file handler
+    * Requires permission: android.Manifest.permission.MODIFY_PHONE_STATE
     */
     boolean writeEfToIcc(int slotId, int family, int efId, in byte[] efData);
 
@@ -142,170 +81,8 @@ interface IExtTelephony {
     * Check if slotId has PrimaryCarrier SIM card present or not.
     * @param - slotId
     * @return true or false
+    * Requires permission: android.Manifest.permission.READ_PRIVILEGED_PHONE_STATE
     */
     boolean isPrimaryCarrierSlotId(int slotId);
-
-    /**
-    * Perform incremental scan using QCRIL hooks.
-    * @param - slotId
-    *          Range: 0 <= slotId < {@link TelephonyManager#getActiveModemCount()}
-    * @return true if the request has successfully been sent to the modem, false otherwise.
-    * Requires permission: android.Manifest.permission.MODIFY_PHONE_STATE
-    */
-    boolean performIncrementalScan(int slotId);
-
-    /**
-    * Abort incremental scan using QCRIL hooks.
-    * @param - slotId
-    *          Range: 0 <= slotId < {@link TelephonyManager#getActiveModemCount()}
-    * @return true if the request has successfully been sent to the modem, false otherwise.
-    * Requires permission: android.Manifest.permission.MODIFY_PHONE_STATE
-    */
-    boolean abortIncrementalScan(int slotId);
-
-    /**
-    * Check if target available with given packageName.
-    * @param packageName
-    * @return true or false
-    */
-    boolean isVendorApkAvailable(String packageName);
-
-    /**
-    * Async api
-    * @deprecated
-    */
-    Token enable5g(int slotId, in Client client);
-
-    /**
-    * Async api
-    * @deprecated
-    */
-    Token disable5g(int slotId, in Client client);
-
-    /**
-    * Async api
-    * @deprecated
-    */
-    Token enable5gOnly(int slotId, in Client client);
-
-    /**
-    * Async api
-    * @deprecated
-    */
-    Token query5gStatus(int slotId, in Client client);
-
-    /**
-    * Async api
-    * a.k.a NR EN-DC and restrict-DCNR.
-    * @deprecated
-    */
-    Token queryNrDcParam(int slotId, in Client client);
-
-    /**
-    * Async api
-    * @deprecated
-    */
-    Token queryNrBearerAllocation(int slotId, in Client client);
-
-    /**
-    * Async api
-    * @deprecated
-    */
-    Token queryNrSignalStrength(int slotId, in Client client);
-
-    /**
-    * Async api
-    * @deprecated
-    */
-    Token queryUpperLayerIndInfo(int slotId, in Client client);
-
-    /**
-    * Async api
-    * @deprecated
-    */
-    Token query5gConfigInfo(int slotId, in Client client);
-
-    /**
-    * Async api
-    */
-    Token queryNrIconType(int slotId, in Client client);
-
-    /**
-    * Enable/disable endc on a given slotId.
-    * @param - slotId
-    * @param - enabled
-    *        true - to enable endc
-    *        false - to disable endc
-    *  @param - client registered with packagename to receive
-    *         callbacks.
-    * @return Integer Token to be used to compare with the response.
-    */
-    Token enableEndc(int slotId, boolean enable, in Client client);
-
-    /**
-    * To query endc status on a given slotId.
-    * @param - slotId
-    * @param - client registered with packagename to receive
-    *         callbacks.
-    * @return Integer Token to be used to compare with the response.
-    */
-    Token queryEndcStatus(int slotId, in Client client);
-
-    /**
-    * Async api
-    */
-    Client registerCallback(String packageName, INetworkCallback callback);
-
-    /**
-    * Async api
-    */
-    void unRegisterCallback(INetworkCallback callback);
-
-    /**
-    * Get value assigned to vendor property
-    * @param - property name
-    * @param - default value of property
-    * @return - integer value assigned
-    */
-    int getPropertyValueInt(String property, int def);
-
-    /**
-    * Get value assigned to vendor property
-    * @param - property name
-    * @param - default value of property
-    * @return - boolean value assigned
-    */
-    boolean getPropertyValueBool(String property, boolean def);
-
-    /**
-    * Get value assigned to vendor property
-    * @param - property name
-    * @param - default value of property
-    * @return - string value assigned
-    */
-    String getPropertyValueString(String property, String def);
-
-    /**
-    * Set nr config to NSA/SA/NSA+SA on a given slotId.
-    * @param - slotId
-    * @param - def
-    *        NR_CONFIG_INVALID  - invalid config
-    *        NR_CONFIG_COMBINED_SA_NSA - set to NSA+SA
-    *        NR_CONFIG_NSA - set to NSA
-    *        NR_CONFIG_SA - set to SA
-    *  @param - client registered with packagename to receive
-    *         callbacks.
-    * @return Integer Token to be used to compare with the response.
-    */
-    Token setNrConfig(int slotId, in NrConfig def, in Client client);
-
-    /**
-    * Query current nr config on a given slotId.
-    * @param - slotId
-    *  @param - client registered with packagename to receive
-    *         callbacks.
-    * @return Integer Token to be used to compare with the response.
-    */
-    Token queryNrConfig(int slotId, in Client client);
 
 }
