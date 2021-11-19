@@ -1,4 +1,4 @@
-/* Copyright (c) 2016, 2017, 2019-2020 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2016, 2017, 2019-2021 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -30,6 +30,7 @@ package org.codeaurora.ims;
 import android.os.Bundle;
 import android.telephony.ims.feature.ImsFeature;
 
+import org.codeaurora.ims.internal.ICrsCrbtController;
 import org.codeaurora.ims.internal.IQtiImsExt;
 import org.codeaurora.ims.internal.IQtiImsExtListener;
 import org.codeaurora.ims.internal.IImsMultiIdentityInterface;
@@ -156,6 +157,24 @@ public abstract class QtiImsExtBase {
         public boolean isCallComposerEnabled(int phoneId) {
             return onIsCallComposerEnabled(phoneId);
         }
+
+        @Override
+        public ICrsCrbtController getCrsCrbtController(int phoneId) {
+            return onGetCrsCrbtController(phoneId);
+        }
+
+        @Override
+        public void queryCallForwardStatus(int phoneId, int reason, int serviceClass,
+                boolean expectMore, IQtiImsExtListener listener) {
+            onQueryCallForwardStatus(phoneId, reason, serviceClass, expectMore, listener);
+        }
+
+        @Override
+        public void queryCallBarring(int phoneId, int cbType, String password, int serviceClass,
+                boolean expectMore, IQtiImsExtListener listener) {
+            onQueryCallBarringStatus(phoneId, cbType, password, serviceClass, expectMore,
+                    listener);
+        }
     };
 
     private QtiImsExtBinder mQtiImsExtBinder;
@@ -248,5 +267,17 @@ public abstract class QtiImsExtBase {
     protected boolean onIsCallComposerEnabled(int phoneId) {
         // no-op
         return false;
+    }
+    protected ICrsCrbtController onGetCrsCrbtController(int phoneId) {
+        //no-op
+        return null;
+    }
+    protected void onQueryCallForwardStatus(int phoneId, int reason, int serviceClass,
+            boolean expectMore, IQtiImsExtListener listener) {
+        // no-op
+    }
+    protected void onQueryCallBarringStatus(int phoneId, int cbType, String password,
+            int serviceClass, boolean expectMore, IQtiImsExtListener listener) {
+        // no-op
     }
 }
